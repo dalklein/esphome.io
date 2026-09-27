@@ -9,12 +9,14 @@ params:
 
 import { Image } from 'astro:assets';
 
-The `modbus_sniffer` component listens to a Modbus RTU bus that two *other* devices are talking on,
-pairs each request with its reply, and hands the result to a lambda. It never transmits.
+The `modbus_sniffer` component listens to a Modbus RTU bus that two or more *other* devices are talking on,
+pairs the client's requests with the servers' replies, and hands the result to a lambda. It never transmits.
 
-This is for buses you do not control. If your ESPHome node is the one doing the polling, use
-[Modbus Controller](/components/modbus_controller/) instead - you will get decoded sensors and none
-of the work below. A sniffer is what you reach for when some other device is the master: an inverter
+A sniffer is for a bus you do not control: with an existing client and one or more server devices. There 
+should only be one device acting as the client, initiating read/write commands, to prevent bus errors.
+If your ESPHome node is the client doing the polling, you can request any data you like, and use 
+[Modbus Controller](/components/modbus_controller/) to provide decoded sensor data. A sniffer is 
+used to passively listen when another device is the client in charge of the bus: an inverter 
 polling a battery, a controller polling a meter, and you want that data without interrupting it.
 
 You must set the `role` attribute of the [Modbus](/components/modbus/) hub to `sniffer`.
