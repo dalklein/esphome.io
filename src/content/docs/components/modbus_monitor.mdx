@@ -95,7 +95,8 @@ modbus_monitor:
 ```
 
 To decode register values, check that the reply carries the registers the request asked for, so that a late reply
-to an earlier read is not taken for the newer one's. For example, to log each register read on the bus:
+to an earlier read is not taken for the newer one's. The [Modbus Monitor Sensor](/components/sensor/modbus_monitor/)
+makes this check before it publishes. For example, to log each register read on the bus:
 
 ```yaml
 modbus_monitor:
