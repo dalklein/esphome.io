@@ -65,8 +65,39 @@ to the UART and after the device's `on_sent`. A request that was queued but neve
 `on_response` runs for each response that matches the request the hub is waiting for, exception responses included,
 after the device has handled it. A request without a response does not run it.
 
+## Listening Only (Sniffer)
+
+A hub with the `server` role and no [Modbus Server](/components/modbus_server/) devices never transmits, so it can
+sniff a bus that other devices use. It needs only an `rx_pin`. For register values, use the
+[Modbus Monitor Sensor](/components/sensor/modbus_monitor/). For anything else, use an automation, for example to
+log every exchange on the bus:
+
+```yaml
+uart:
+  - id: bus
+    rx_pin: GPIOXX
+    baud_rate: 9600
+
+modbus:
+  - uart_id: bus
+    role: server
+
+modbus_monitor:
+  - on_response:
+      - lambda: |-
+          char hex[format_hex_pretty_size(modbus::MAX_PDU_SIZE)];
+          ESP_LOGI("sniffer", "%u request:  %s", address, format_hex_pretty_to(hex, request.data(), request.size()));
+          ESP_LOGI("sniffer", "%u response: %s", address, format_hex_pretty_to(hex, response.data(), response.size()));
+```
+
+On the same bus, the hub can also answer as a Modbus Server: give it a `tx_pin` and devices, and it still sees the
+exchanges of the others. A `client` hub sees only its own exchanges. Each hub has its own UART, so one ESPHome device
+can sniff one bus and be a client or server on another. Most ESP32 chips have at least two hardware UARTs free for
+buses; an ESP8266 has only one. See [UART](/components/uart/#hardware-uarts).
+
 ## See Also
 
 - [Modbus Component](/components/modbus/)
+- [Modbus Monitor Sensor](/components/sensor/modbus_monitor/)
 - [Modbus Client](/components/modbus_client/)
 - [Modbus Server](/components/modbus_server/)
