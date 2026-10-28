@@ -64,8 +64,8 @@ sensor:
 The sensor publishes each time the hub sees an exchange with its device that covers all of the value's registers:
 
 - **Reads** of holding or input registers (function codes `0x03`, `0x04` and `0x17`): the value is taken from the
-  response. Any read covering the registers counts, whatever its start address and length. An exception response
-  publishes nothing.
+  response. Any read covering the registers counts, whatever its start address and length. For `0x17` that is the
+  read half only: the registers it writes are not published. An exception response publishes nothing.
 - **Writes** of registers (function codes `0x06` and `0x10`), once the device confirms them: for `0x06` the response
   repeats the request, for `0x10` it repeats the start address and count. The value is taken from the request, so
   only values the device accepted are published. A write without a confirmation publishes nothing.
